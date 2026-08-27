@@ -1,0 +1,17 @@
+Variable,n,Pre Mean,Pre SD,Pre Median,Pre IQR,Post Mean,Post SD,Post Median,Post IQR,Mean Diff,W,p-value,p (Bonferroni),Effect r,Effect Size
+S: Python comfort,27,4.48,1.5,5.0,2.0,4.41,1.78,5.0,3.0,-0.07,93.5,0.9515,1.0,-0.016,negligible
+S: Jupyter/Colab familiarity,27,3.67,1.86,4.0,2.5,4.44,1.87,5.0,3.0,0.78,80.0,0.1283,1.0,0.368,medium
+S: LiDAR coordinate frames,27,1.96,0.9,2.0,2.0,3.85,1.63,4.0,2.5,1.89,14.0,0.0002,0.0038,0.889,large
+S: SLAM confidence,27,5.59,1.25,6.0,2.0,5.37,1.28,5.0,2.0,-0.22,94.0,0.4481,1.0,-0.186,small
+I: Interest in robotics,27,6.48,0.75,7.0,1.0,6.74,0.59,7.0,0.0,0.26,26.5,0.1664,1.0,0.418,medium
+I: Interest in AI,27,6.04,1.19,6.0,1.5,6.33,0.88,7.0,1.0,0.3,45.5,0.2304,1.0,0.331,medium
+I: Would take robotics class,27,6.52,0.75,7.0,1.0,6.67,0.55,7.0,1.0,0.15,27.5,0.3341,1.0,0.295,small
+U: Workshop helps career,27,5.96,1.06,6.0,2.0,6.07,1.0,6.0,2.0,0.11,76.0,0.6675,1.0,0.111,small
+TK: Sensor familiarity,27,3.85,1.54,4.0,2.0,4.96,1.32,5.0,2.0,1.11,63.5,0.0126,0.2021,0.577,large
+TK: LiDAR/mapping familiarity,27,3.37,1.5,3.0,2.0,4.7,1.56,5.0,2.5,1.33,46.5,0.005,0.0805,0.663,large
+TK: Simulation tools,27,3.15,1.49,4.0,2.0,4.89,1.19,5.0,2.0,1.74,30.0,0.0005,0.0081,0.8,large
+TK: Bayesian estimation,27,2.48,1.7,2.0,2.5,4.52,1.83,5.0,3.0,2.04,26.0,0.0006,0.0095,0.812,large
+TK: Pose-map uncertainty,26,2.12,1.48,2.0,1.75,4.81,1.52,5.0,2.0,2.69,3.0,0.0,0.0004,0.98,large
+TK: Bresenham's algorithm,27,1.52,0.8,1.0,1.0,3.89,1.58,4.0,2.0,2.37,4.0,0.0,0.0004,0.973,large
+TK: OGM confidence,26,1.73,0.87,1.0,1.75,3.73,1.61,3.0,2.5,2.0,6.0,0.0001,0.0021,0.948,large
+Other: Robotics inaccessible,26,3.38,1.55,4.0,2.0,3.54,1.45,3.5,1.75,0.15,113.5,0.6692,1.0,0.103,small
