@@ -1,0 +1,4 @@
+Construct Category,n_items,n,Pre Mean,Post Mean,Mean Diff,W,p-value,Effect r,Effect Size,Cronbach alpha (pre),Cronbach alpha (post)
+K (Knowledge),6,26,2.8,4.6,1.8,6.5,0.0,0.96,large,0.719,0.9
+IC (Interest and Career),4,26,6.33,6.47,0.14,113.0,0.4439,0.181,small,0.636,0.818
+SE (Self-Efficacy),6,26,3.19,4.32,1.13,38.5,0.0014,0.743,large,0.738,0.84
