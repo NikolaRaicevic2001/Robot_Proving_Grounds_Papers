@@ -1,0 +1,28 @@
+Variable,MUSIC,n,Mean,SD,Median,IQR,Min,Max
+M: Control over learning,M,27,5.37,1.01,5.0,1.0,2,7
+M: Effort proportional to learning,M,27,5.44,1.19,5.0,1.0,2,7
+M: Intend to explore website,M,27,6.33,0.96,7.0,1.0,4,7
+U: More likely STEM career,U,27,6.48,0.89,7.0,1.0,4,7
+U: Understand real-world use,U,27,5.52,1.25,6.0,2.5,3,7
+U: Website valuable resource,U,27,6.15,0.86,6.0,1.0,4,7
+U: Mapping module comprehensive,U,27,5.41,1.01,5.0,1.0,4,7
+S: PyBullet confidence,S,27,3.59,1.6,3.0,1.5,1,7
+S: Python for simulations,S,27,4.26,1.35,4.0,2.0,2,7
+S: Discuss robotics w/ peers,S,27,4.59,1.25,4.0,2.0,2,7
+S: Can engage in robotics,S,27,5.37,1.24,6.0,1.0,2,7
+S: LiDAR for mapping,S,27,5.3,1.07,5.0,2.0,4,7
+S: Sensor noise understanding,S,27,4.96,1.37,5.0,2.0,2,7
+S: Bresenham purpose,S,27,5.22,1.19,5.0,2.0,3,7
+I: Increased interest,I,27,6.41,0.75,7.0,1.0,5,7
+I: Interest in research,I,27,6.19,1.08,7.0,1.5,4,7
+I: More interested (post),I,27,6.3,0.87,7.0,1.0,4,7
+I: Join course/project,I,27,6.22,1.05,7.0,1.0,4,7
+I: Workshop made more interested,I,27,6.33,0.73,6.0,1.0,5,7
+C: Instructors willing to assist,C,27,6.41,0.8,7.0,1.0,5,7
+C: Well organized,C,27,5.44,1.4,5.0,2.5,3,7
+C: Engaging methods,C,27,5.74,1.23,6.0,2.0,3,7
+C: Hands-on helped theory,C,27,5.41,1.31,6.0,2.5,3,7
+C: Theory-practice balance,C,27,5.04,1.43,5.0,2.0,2,7
+C: Notebooks helpful,C,27,5.11,1.28,5.0,2.0,3,7
+S: Concepts difficult,S,27,4.74,1.32,5.0,1.5,2,7
+Other: Experience rating,Other,27,4.56,0.58,5.0,1.0,3,5

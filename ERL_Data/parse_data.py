@@ -1,49 +1,63 @@
+import argparse
+import os
+
 import pandas as pd
 
-POST_RAW_FP = "data/erl_post_raw.csv"
-PRE_RAW_FP  = "data/erl_pre_raw.csv"
 
-# Said yes to consent
-PRE_PROCESSED_FP = "data/erl_pre_processed.csv"
-POST_PROCESSED_FP = "data/erl_post_processed.csv"
+def find_consent_column(df):
+    """Returns the consent column (first header mentioning consent), falling back to column 1."""
+    for col in df.columns:
+        if "consent" in col.lower():
+            return col
+    return df.columns[1]
 
 
-# Has pre and post response
-PRE_PAIRED_FP  = "data/erl_pre_paired.csv"
-POST_PAIRED_FP  = "data/erl_post_paired.csv"
+def process(raw_df):
+    """Renames consent/email columns and keeps only rows that explicitly consented."""
+    df = raw_df.rename(columns={find_consent_column(raw_df): "consent", "Email Address": "email"})
+    df["email"] = df["email"].str.strip().str.lower()
 
-def parse_data():
-    pre_raw_df = pd.read_csv(PRE_RAW_FP)
-    post_raw_df = pd.read_csv(POST_RAW_FP)
+    # Filters for consent (blank consent is treated as no consent)
+    return df[df["consent"].str.strip() == "Yes"]
 
-    # Rename to "consent"
-    pre_processed_df = pre_raw_df.rename(columns={pre_raw_df.columns[1]: "consent"})
-    post_processed_df = post_raw_df.rename(columns={post_raw_df.columns[1]: "consent"})
 
-    # Rename email address to "email"
-    post_processed_df.rename(columns={"Email Address": "email"}, inplace=True)
-    pre_processed_df.rename(columns={"Email Address": "email"}, inplace=True)
-
-    # Filters for consent
-    pre_processed_df = pre_processed_df[pre_processed_df["consent"] != "No"]
-    post_processed_df = post_processed_df[post_processed_df["consent"] != "No"]
-
-    # Pairs data
-    pre_df_filt = pre_processed_df[pre_processed_df["email"].isin(post_processed_df["email"])]
-    post_df_filt = post_processed_df[post_processed_df["email"].isin(pre_processed_df["email"])]
+def parse_data(pre_raw_fp, post_raw_fp, out_dir, prefix):
+    pre_processed_df = process(pd.read_csv(pre_raw_fp))
+    post_processed_df = process(pd.read_csv(post_raw_fp))
 
     # Removes duplicates and gets last submission
-    mask = pre_df_filt.duplicated(subset=["email"], keep="last")
-    pre_df_filt = pre_df_filt[~mask]
+    pre_dedup = pre_processed_df.drop_duplicates(subset=["email"], keep="last")
+    post_dedup = post_processed_df.drop_duplicates(subset=["email"], keep="last")
 
+    # Pairs data
+    pre_df_filt = pre_dedup[pre_dedup["email"].isin(post_dedup["email"])]
+    post_df_filt = post_dedup[post_dedup["email"].isin(pre_dedup["email"])]
+
+    # Sorts both by email so row i of pre and row i of post are the same participant
+    pre_df_filt = pre_df_filt.sort_values("email")
+    post_df_filt = post_df_filt.sort_values("email")
 
     assert len(pre_df_filt) == len(post_df_filt), f"length {len(pre_df_filt)} != {len(post_df_filt)}"
+    assert (pre_df_filt["email"].values == post_df_filt["email"].values).all(), "pre/post rows are misaligned"
+
+    print(f"Pre:  {len(pre_processed_df)} consented ({len(pre_processed_df) - len(pre_dedup)} duplicate submissions dropped)")
+    print(f"Post: {len(post_processed_df)} consented ({len(post_processed_df) - len(post_dedup)} duplicate submissions dropped)")
+    print(f"Paired: {len(pre_df_filt)}")
 
     # Saves data
-    post_df_filt.to_csv(POST_PAIRED_FP)
-    pre_df_filt.to_csv(PRE_PAIRED_FP)
-    pre_processed_df.to_csv(PRE_PROCESSED_FP)
-    post_processed_df.to_csv(POST_PROCESSED_FP)
+    os.makedirs(out_dir, exist_ok=True)
+    pre_processed_df.to_csv(os.path.join(out_dir, f"{prefix}_pre_processed.csv"))
+    post_processed_df.to_csv(os.path.join(out_dir, f"{prefix}_post_processed.csv"))
+    pre_df_filt.to_csv(os.path.join(out_dir, f"{prefix}_pre_paired.csv"))
+    post_df_filt.to_csv(os.path.join(out_dir, f"{prefix}_post_paired.csv"))
+
 
 if __name__ == "__main__":
-    parse_data()
+    parser = argparse.ArgumentParser(description="Filter survey responses for consent and pair pre/post responses by email.")
+    parser.add_argument("--pre", required=True, help="raw pre-survey CSV")
+    parser.add_argument("--post", required=True, help="raw post-survey CSV")
+    parser.add_argument("--out-dir", required=True, help="directory to write processed/paired CSVs")
+    parser.add_argument("--prefix", default="erl", help="output file prefix (default: erl)")
+    args = parser.parse_args()
+
+    parse_data(args.pre, args.post, args.out_dir, args.prefix)

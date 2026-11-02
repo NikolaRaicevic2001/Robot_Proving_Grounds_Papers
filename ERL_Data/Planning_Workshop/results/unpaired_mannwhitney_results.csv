@@ -1,0 +1,14 @@
+Variable,n pre,n post,Pre Mean,Post Mean,Pre Median,Post Median,U,p-value,p (Bonferroni)
+K: Planning in autonomous systems,152,42,2.6,3.69,2.0,4.0,2108.5,0.0006,0.0077
+K: Dijkstra / A*,152,42,2.28,3.81,1.0,4.0,1748.5,0.0,0.0
+K: RRT / RRT*,152,42,1.59,3.6,1.0,4.0,1239.0,0.0,0.0
+K: Pure Pursuit,152,42,1.66,3.71,1.0,4.0,1232.0,0.0,0.0
+K: Simulation tools,152,42,2.03,3.36,1.0,3.0,1844.0,0.0,0.0001
+S: Explain purpose of planning †,152,42,2.62,4.38,2.0,4.0,1491.0,0.0,0.0
+S: Explain A*/Dijkstra/RRT †,152,42,1.67,4.14,1.0,4.0,968.5,0.0,0.0
+S: Implement a planner in code,152,42,1.6,3.62,1.0,3.0,1135.5,0.0,0.0
+S: Modify Pure Pursuit,152,42,1.68,3.76,1.0,4.0,1114.5,0.0,0.0
+S: Capable of robotics research,152,42,4.12,4.74,4.0,5.0,2642.0,0.0843,1.0
+I: Learn more about robotics,152,42,6.51,5.79,7.0,6.5,4030.5,0.002,0.0257
+I: Take a robotics class,152,42,6.37,5.67,7.0,6.0,4108.5,0.0013,0.017
+I: Robotics research,152,42,6.2,5.71,7.0,6.0,3721.0,0.0709,0.9223
