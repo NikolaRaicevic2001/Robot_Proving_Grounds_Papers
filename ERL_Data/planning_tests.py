@@ -331,7 +331,10 @@ def slug(text):
 # ─── Analysis ─────────────────────────────────────────────────────────────────
 
 def run(data_dir, out_dir, prefix):
-    os.makedirs(out_dir, exist_ok=True)
+    dirs = {kind: os.path.join(out_dir, kind)
+            for kind in ('paired_graphs', 'unpaired_graphs', 'paired_csv', 'unpaired_csv')}
+    for d in dirs.values():
+        os.makedirs(d, exist_ok=True)
     rng = np.random.default_rng(0)
 
     pre = pd.read_csv(os.path.join(data_dir, f"{prefix}_pre_paired.csv"), index_col=0)
@@ -386,7 +389,7 @@ def run(data_dir, out_dir, prefix):
               f"diff={np.mean(diff):+.2f}  p(Bonf)={p_corrected:.4f} {sig_stars(p_corrected):3s} r={r:+.2f}")
 
     results_df = pd.DataFrame(results)
-    results_df.to_csv(os.path.join(out_dir, "paired_wilcoxon_results.csv"), index=False)
+    results_df.to_csv(os.path.join(dirs['paired_csv'], "paired_wilcoxon_results.csv"), index=False)
 
     # 2. Composite scores
     print("\n" + "=" * 80)
@@ -421,7 +424,7 @@ def run(data_dir, out_dir, prefix):
         })
         print(f"{cat_name:15s} ({len(items)} items) alpha pre={pre_alpha:.2f} post={post_alpha:.2f}  "
               f"pre M={np.mean(pre_c):.2f} post M={np.mean(post_c):.2f}  p={p_val:.4f} {sig_stars(p_val)} r={r:+.2f}")
-    pd.DataFrame(composite_results).to_csv(os.path.join(out_dir, "composite_results.csv"), index=False)
+    pd.DataFrame(composite_results).to_csv(os.path.join(dirs['paired_csv'], "composite_results.csv"), index=False)
 
     # 3. Unpaired comparison: all consenting respondents (Mann-Whitney U)
     print("\n" + "=" * 80)
@@ -443,7 +446,7 @@ def run(data_dir, out_dir, prefix):
         })
         print(f"{label:40s} pre n={len(pre_v):3d} M={pre_v.mean():.2f}  post n={len(post_v):2d} M={post_v.mean():.2f}  "
               f"p(Bonf)={p_corrected:.4f} {sig_stars(p_corrected)}")
-    pd.DataFrame(unpaired_results).to_csv(os.path.join(out_dir, "unpaired_mannwhitney_results.csv"), index=False)
+    pd.DataFrame(unpaired_results).to_csv(os.path.join(dirs['unpaired_csv'], "unpaired_mannwhitney_results.csv"), index=False)
 
     # 4. Pre-only / post-only descriptives
     def describe(df, items):
@@ -453,16 +456,16 @@ def run(data_dir, out_dir, prefix):
             rows.append({'Variable': label, 'n': len(v), 'Mean': round(v.mean(), 2), 'SD': round(v.std(ddof=1), 2),
                          'Median': v.median(), 'Min': v.min(), 'Max': v.max()})
         return pd.DataFrame(rows)
-    describe(pre_all, PRE_ONLY_ITEMS).to_csv(os.path.join(out_dir, "pre_only_descriptives.csv"), index=False)
-    describe(post_all, POST_ONLY_ITEMS).to_csv(os.path.join(out_dir, "post_only_descriptives.csv"), index=False)
+    describe(pre_all, PRE_ONLY_ITEMS).to_csv(os.path.join(dirs['unpaired_csv'], "pre_only_descriptives.csv"), index=False)
+    describe(post_all, POST_ONLY_ITEMS).to_csv(os.path.join(dirs['unpaired_csv'], "post_only_descriptives.csv"), index=False)
 
     # ─── Visualizations ───────────────────────────────────────────────────────
     saved = []
 
-    def save(fig, name):
-        fig.savefig(os.path.join(out_dir, name), dpi=150, bbox_inches='tight')
+    def save(fig, name, kind):
+        fig.savefig(os.path.join(dirs[kind], name), dpi=150, bbox_inches='tight')
         plt.close(fig)
-        saved.append(name)
+        saved.append(os.path.join(kind, name))
 
     def legend_pre_post(fig, y=1.0):
         handles = [plt.Rectangle((0, 0), 1, 1, color=c, alpha=0.6) for c in (PRE_COLOR, POST_COLOR)]
@@ -484,7 +487,7 @@ def run(data_dir, out_dir, prefix):
                  fontsize=12, y=1.02)
     legend_pre_post(fig, 1.04)
     fig.tight_layout()
-    save(fig, "paired_boxplots.png")
+    save(fig, "paired_boxplots.png", 'paired_graphs')
 
     # 4b. Composite box plots
     fig, axes = plt.subplots(1, len(composite_values), figsize=(4.5 * len(composite_values), 4.6))
@@ -495,7 +498,7 @@ def run(data_dir, out_dir, prefix):
     fig.suptitle('Composite scores — paired participants (mean of items, 1–7)', fontsize=12, y=1.04)
     legend_pre_post(fig, 1.06)
     fig.tight_layout()
-    save(fig, "composite_boxplots.png")
+    save(fig, "composite_boxplots.png", 'paired_graphs')
 
     # 4c. Dumbbell: mean change per item
     fig, ax = plt.subplots(figsize=(9, 0.45 * len(results) + 1.5))
@@ -516,7 +519,7 @@ def run(data_dir, out_dir, prefix):
     ax.legend(handles=[plt.Line2D([], [], marker='o', ls='', color=c, markersize=8) for c in (PRE_COLOR, POST_COLOR)],
               labels=['Pre', 'Post'], loc='lower right')
     fig.tight_layout()
-    save(fig, "mean_change_dumbbell.png")
+    save(fig, "mean_change_dumbbell.png", 'paired_graphs')
 
     # 4d. Unpaired box plots: all consenting respondents
     fig, axes = plt.subplots(nrows, ncols, figsize=(4 * ncols, 4.3 * nrows))
@@ -542,7 +545,7 @@ def run(data_dir, out_dir, prefix):
                  fontsize=12, y=1.02)
     legend_pre_post(fig, 1.04)
     fig.tight_layout()
-    save(fig, "unpaired_boxplots.png")
+    save(fig, "unpaired_boxplots.png", 'unpaired_graphs')
 
     # 4e. Likert distributions for pre-only and post-only items
     fig, axes = plt.subplots(2, 1, figsize=(11, 7.5),
@@ -553,7 +556,7 @@ def run(data_dir, out_dir, prefix):
                      f'Post-survey only (all consenting respondents)')
     likert_legend(fig)
     fig.tight_layout(rect=(0, 0.04, 1, 1))
-    save(fig, "unpaired_likert_distributions.png")
+    save(fig, "unpaired_likert_distributions.png", 'unpaired_graphs')
 
     # 4f. Likert distributions for the paired items, pre vs post side by side
     fig, axes = plt.subplots(1, 2, figsize=(16, 0.5 * len(PAIRED_ITEMS) + 2), sharey=True)
@@ -562,7 +565,7 @@ def run(data_dir, out_dir, prefix):
     diverging_likert(axes[1], [pd.Series(paired_values[k][1]) for k in labels], labels, f'Post (paired, n={N})')
     likert_legend(fig)
     fig.tight_layout(rect=(0, 0.05, 1, 1))
-    save(fig, "paired_likert_distributions.png")
+    save(fig, "paired_likert_distributions.png", 'paired_graphs')
 
     # 4g. Multi-select asked in both surveys: % of paired participants, pre vs post
     multi_rows = []
@@ -593,8 +596,8 @@ def run(data_dir, out_dir, prefix):
         ax.grid(axis='y', visible=False)
         ax.legend(loc='lower right')
         fig.tight_layout()
-        save(fig, f"multiselect_paired_{slug(label)}.png")
-    pd.DataFrame(multi_rows).to_csv(os.path.join(out_dir, "multiselect_paired_shares.csv"), index=False)
+        save(fig, f"multiselect_paired_{slug(label)}.png", 'paired_graphs')
+    pd.DataFrame(multi_rows).to_csv(os.path.join(dirs['paired_csv'], "multiselect_paired_shares.csv"), index=False)
 
     # 4h. Multi-select asked in only one survey: all consenting respondents
     def single_bar_grid(groups, filename, title, color_for):
@@ -621,7 +624,7 @@ def run(data_dir, out_dir, prefix):
         np.atleast_1d(axes)[-1].set_xlabel('% of respondents')
         fig.suptitle(title, fontsize=12, x=0.01, ha='left', y=1.0)
         fig.tight_layout(rect=(0, 0, 1, 0.985))
-        save(fig, filename)
+        save(fig, filename, 'unpaired_graphs')
 
     color_for = lambda label: PRE_COLOR if label.startswith('Pre') else POST_COLOR
     single_bar_grid({k: (pre_all, c) for k, c in PRE_ONLY_MULTI.items()} |
@@ -646,7 +649,7 @@ def run(data_dir, out_dir, prefix):
     ax.set_title(f'Pre: Age (n={len(ages)}, median={ages.median():.0f})', fontsize=11, loc='left')
     ax.grid(axis='x', visible=False)
     fig.tight_layout()
-    save(fig, "age_distribution.png")
+    save(fig, "age_distribution.png", 'unpaired_graphs')
 
     print("\nSaved to", out_dir)
     for name in saved:
